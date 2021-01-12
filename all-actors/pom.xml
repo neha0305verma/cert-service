@@ -8,10 +8,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>all-actors</artifactId>
 
-    <properties>
-        <cert.akka.version>2.5.19</cert.akka.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
