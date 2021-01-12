@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -14,11 +15,14 @@ import org.sunbird.BaseException;
 import org.sunbird.RequestValidatorFunction;
 import org.sunbird.message.Localizer;
 import org.sunbird.request.Request;
+import org.sunbird.request.RequestContext;
 import org.sunbird.response.Response;
 
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
+import play.libs.typedmap.TypedKey;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 import utils.RequestMapper;
@@ -35,6 +39,7 @@ import utils.RequestMapper;
  */
 public class BaseController extends Controller {
 	Logger logger = LoggerFactory.getLogger(BaseController.class);
+	private static final String debugEnabled = "false";
 	/**
 	 * We injected HttpExecutionContext to decrease the response time of APIs.
 	 */
@@ -101,6 +106,7 @@ public class BaseController extends Controller {
 			Request request = new Request();
 			if (req.body() != null && req.body().asJson() != null) {
 				request = (Request) RequestMapper.mapRequest(req, Request.class);
+				request.setRequestContext(getRequestContext(req, operation));
 			}
 			if (validatorFunction != null) {
 				validatorFunction.apply(request);
@@ -112,6 +118,16 @@ public class BaseController extends Controller {
 			return CompletableFuture.completedFuture(RequestHandler.handleFailureResponse(ex, req));
 		}
 
+	}
+
+	private RequestContext getRequestContext(Http.Request httpRequest, String actorOperation) {
+		RequestContext requestContext = new RequestContext(httpRequest.attrs().getOptional(TypedKey.<String>create("USER_ID")).orElse(null),
+				httpRequest.header("x-device-id").orElse(null), httpRequest.header("x-session-id").orElse(null),
+				httpRequest.header("x-app-id").orElse(null), httpRequest.header("x-app-ver").orElse(null),
+				httpRequest.header("x-trace-id").orElse(UUID.randomUUID().toString()),
+				(httpRequest.header("x-trace-enabled").isPresent() ? httpRequest.header("x-trace-enabled").orElse(debugEnabled): debugEnabled),
+				actorOperation);
+		return requestContext;
 	}
 
 	/**

@@ -28,6 +28,8 @@ public class Request implements Serializable {
   private String ts;
   private RequestParams params;
 
+  private RequestContext requestContext;
+
   private Map<String, Object> request = new HashMap<>();
   private Map<String, Object> headers = new WeakHashMap<>();
 
@@ -179,5 +181,13 @@ public class Request implements Serializable {
               ResponseCode.CLIENT_ERROR.getCode());
     }
     this.timeout = timeout;
+  }
+
+  public RequestContext getRequestContext() {
+    return requestContext;
+  }
+
+  public void setRequestContext(RequestContext requestContext) {
+    this.requestContext = requestContext;
   }
 }

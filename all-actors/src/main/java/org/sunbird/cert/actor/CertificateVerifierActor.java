@@ -19,6 +19,7 @@ import org.sunbird.cloud.storage.exception.StorageServiceException;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.request.Request;
+import org.sunbird.request.RequestContext;
 import org.sunbird.response.Response;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public class CertificateVerifierActor extends BaseActor {
     @Override
     public void onReceive(Request request) throws Throwable {
         String operation = request.getOperation();
-        logger.info("onReceive method call start for operation {}" ,operation);
+        logger.info(request.getRequestContext(), "onReceive method call start for operation {}" ,operation);
         if (JsonKey.VERIFY_CERT.equalsIgnoreCase(operation)) {
             verifyCertificate(request);
         }
@@ -62,23 +63,23 @@ public class CertificateVerifierActor extends BaseActor {
             if (((Map) request.get(JsonKey.CERTIFICATE)).containsKey(JsonKey.DATA)) {
                 certificate = (Map<String, Object>) ((Map) request.get(JsonKey.CERTIFICATE)).get(JsonKey.DATA);
             } else if (((Map) request.get(JsonKey.CERTIFICATE)).containsKey(JsonKey.ID)) {
-                certificate = downloadCert((String) ((Map<String, Object>) request.get(JsonKey.CERTIFICATE)).get(JsonKey.ID));
+                certificate = downloadCert(request.getRequestContext(), (String) ((Map<String, Object>) request.get(JsonKey.CERTIFICATE)).get(JsonKey.ID));
             }
-            logger.debug("Certificate extension {}" ,certificate);
+            logger.debug(request.getRequestContext(), "Certificate extension {}" ,certificate);
             List<String> certificateType = (List<String>) ((Map) certificate.get(JsonKey.VERIFICATION)).get(JsonKey.TYPE);
             if (JsonKey.HOSTED.equals(certificateType.get(0))) {
-                verificationResponse = verifyHostedCertificate(certificate);
+                verificationResponse = verifyHostedCertificate(request.getRequestContext(), certificate);
             } else if (JsonKey.SIGNED_BADGE.equals(certificateType.get(0))) {
-                verificationResponse = verifySignedCertificate(certificate);
+                verificationResponse = verifySignedCertificate(request.getRequestContext(), certificate);
             }
         } catch (IOException | SignatureException.UnreachableException | SignatureException.VerificationException ex) {
-            logger.error("verifySignedCertificate:Exception Occurred while verifying certificate. {} ", ex.getMessage());
+            logger.error(request.getRequestContext(), "verifySignedCertificate:Exception Occurred while verifying certificate. {} " + ex.getMessage(), ex);
             throw new BaseException(IResponseMessage.INTERNAL_ERROR, ex.getMessage(), ResponseCode.SERVER_ERROR.getCode());
         }
         Response response = new Response();
         response.getResult().put("response", verificationResponse);
         sender().tell(response, getSelf());
-        logger.info("onReceive method call End");
+        logger.info(request.getRequestContext(), "onReceive method call End");
     }
 
     /**
@@ -89,10 +90,10 @@ public class CertificateVerifierActor extends BaseActor {
      * @throws SignatureException.UnreachableException
      * @throws SignatureException.VerificationException
      */
-    private VerificationResponse verifySignedCertificate(Map<String, Object> certificate) throws SignatureException.UnreachableException, SignatureException.VerificationException {
+    private VerificationResponse verifySignedCertificate(RequestContext requestContext, Map<String, Object> certificate) throws SignatureException.UnreachableException, SignatureException.VerificationException {
         List<String> messages = new ArrayList<>();
         CollectionUtils.addIgnoreNull(messages, verifySignature(certificate));
-        CollectionUtils.addIgnoreNull(messages, verifyExpiryDate((String) certificate.get(JsonKey.EXPIRES)));
+        CollectionUtils.addIgnoreNull(messages, verifyExpiryDate(requestContext, (String) certificate.get(JsonKey.EXPIRES)));
         return getVerificationResponse(messages);
     }
 
@@ -103,9 +104,9 @@ public class CertificateVerifierActor extends BaseActor {
      * @param certificate certificate object
      * @return
      */
-    private VerificationResponse verifyHostedCertificate(Map<String, Object> certificate) {
+    private VerificationResponse verifyHostedCertificate(RequestContext requestContext, Map<String, Object> certificate) {
         List<String> messages = new ArrayList<>();
-        messages.add(verifyExpiryDate((String) certificate.get(JsonKey.EXPIRES)));
+        messages.add(verifyExpiryDate(requestContext, (String) certificate.get(JsonKey.EXPIRES)));
         messages.removeAll(Collections.singleton(null));
         return getVerificationResponse(messages);
     }
@@ -132,7 +133,7 @@ public class CertificateVerifierActor extends BaseActor {
      * @throws IOException
      * @throws BaseException
      */
-    private Map<String, Object> downloadCert(String url) throws IOException, BaseException {
+    private Map<String, Object> downloadCert(RequestContext requestContext, String url) throws IOException, BaseException {
         StoreConfig storeConfig = new StoreConfig(certsConstant.getStorageParamsFromEvn());
         CertStoreFactory certStoreFactory = new CertStoreFactory(null);
         ICertStore certStore = certStoreFactory.getCloudStore(storeConfig);
@@ -141,26 +142,26 @@ public class CertificateVerifierActor extends BaseActor {
             String uri = UrlManager.getContainerRelativePath(url);
             String filePath = "conf/";
             certStore.get(uri);
-            File file = new File(filePath + getFileName(uri));
+            File file = new File(filePath + getFileName(requestContext, uri));
             Map<String, Object> certificate = mapper.readValue(file, new TypeReference<Map<String, Object>>() {
             });
             file.delete();
             return certificate;
         } catch (StorageServiceException ex) {
-            logger.error("downloadCertJson:Exception Occurred while downloading json certificate from the cloud. {} ", ex.getMessage());
+            logger.error(requestContext, "downloadCertJson:Exception Occurred while downloading json certificate from the cloud. {} " + ex.getMessage(), ex);
             throw new BaseException("INVALID_PARAM_VALUE", MessageFormat.format(IResponseMessage.INVALID_PARAM_VALUE,
                     url, JsonKey.ID), ResponseCode.CLIENT_ERROR.getCode());
         }
     }
 
-    private String getFileName(String certId) {
+    private String getFileName(RequestContext requestContext, String certId) {
         String idStr = null;
         try {
             URI uri = new URI(certId);
             String path = uri.getPath();
             idStr = path.substring(path.lastIndexOf('/') + 1);
         } catch (URISyntaxException e) {
-            logger.debug("getFileName : exception occurred while getting file form the uri {}", e.getMessage());
+            logger.debug(requestContext, "getFileName : exception occurred while getting file form the uri {}", e.getMessage());
         }
         return idStr;
     }
@@ -187,7 +188,7 @@ public class CertificateVerifierActor extends BaseActor {
         return message;
     }
 
-    private String verifyExpiryDate(String expiryDate) {
+    private String verifyExpiryDate(RequestContext requestContext, String expiryDate) {
         String message = null;
         if (StringUtils.isNotBlank(expiryDate)) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -197,7 +198,7 @@ public class CertificateVerifierActor extends BaseActor {
                     message = "ERROR: Assertion.expires - certificate has been expired";
                 }
             } catch (ParseException e) {
-                logger.info("verifyExpiryDate : exception occurred parsing date {}" , e.getMessage());
+                logger.info(requestContext, "verifyExpiryDate : exception occurred parsing date {}" , e.getMessage());
             }
         }
         return message;

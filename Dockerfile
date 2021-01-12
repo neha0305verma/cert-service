@@ -14,4 +14,4 @@ RUN chown -R sunbird:sunbird /home/sunbird
 USER sunbird
 EXPOSE 9000
 WORKDIR /home/sunbird/
-CMD java -XX:+PrintFlagsFinal $JAVA_OPTIONS -cp '/home/sunbird/cert-service-1.2.0/lib/*' play.core.server.ProdServerStart  /home/sunbird/cert-service-1.2.0
+CMD java -XX:+PrintFlagsFinal $JAVA_OPTIONS -cp '/home/sunbird/cert-service-1.2.0/lib/*' -Dlogger.file=/home/sunbird/cert-service-1.2.0/config/logback.xml play.core.server.ProdServerStart  /home/sunbird/cert-service-1.2.0
