@@ -60,8 +60,5 @@
         <appender-ref ref="defaultLoggerAppender" />
     </logger>
 
-    <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="ASYNC"/>
-    </root>
+
 </configuration>
