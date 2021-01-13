@@ -39,8 +39,8 @@ public class PdfGenerator {
     connectionManager.setDefaultMaxPerRoute(150);
     connectionManager.closeIdleConnections(180, TimeUnit.SECONDS);
   }
-  private static Logger logger = LoggerFactory.getLogger(PdfGenerator.class);
-  private static ObjectMapper mapper = new ObjectMapper();
+    public static LoggerUtil logger = new LoggerUtil(PdfGenerator.class);
+    private static ObjectMapper mapper = new ObjectMapper();
   private static ConnectionKeepAliveStrategy keepAliveStrategy =
     (response, context) -> {
       HeaderElementIterator it =
@@ -79,7 +79,7 @@ public class PdfGenerator {
         String pdfUrl = callPrintService(printServiceReq);
         String [] arr = pdfUrl.split("/");
         long endTime = System.currentTimeMillis();
-        logger.info("Total time taken by print service to generate PDF = "+(endTime-startTime));
+        logger.info(null, "Total time taken by print service to generate PDF = "+(endTime-startTime));
         return "/"+path+arr[arr.length-1];
     }
 
@@ -95,7 +95,7 @@ public class PdfGenerator {
                 method.setAccessible(true);
                 context.put(macro, method.invoke(htmlVarResolver));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                logger.error("exception "+ e.getMessage(),e);
+                logger.error(null, "exception "+ e.getMessage(), e);
             }
         }
         context.put("qrCodeImage",qrImageUrl);
@@ -116,7 +116,7 @@ public class PdfGenerator {
         try {
           response.close();
         } catch (Exception ex) {
-          logger.error("Exception occurred while closing http response.");
+          logger.error(null, "Exception occurred while closing http response.", ex);
         }
         return pdfUrl;
     }

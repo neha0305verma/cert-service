@@ -2,8 +2,6 @@ package org.sunbird;
 
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.incredible.processor.JsonKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +11,7 @@ import java.util.Map;
  */
 public class CertsConstant {
 
-    private static Logger logger = LoggerFactory.getLogger(CertsConstant.class);
+    public static LoggerUtil logger = new LoggerUtil(CertsConstant.class);
 
     private static final String BADGE_URL = "Badge.json";
     private static final String ISSUER_URL = "Issuer.json";
@@ -114,7 +112,7 @@ public class CertsConstant {
     }
 
     private static void printErrorForMissingEnv(String env) {
-        logger.error("Constant:printErrorForMissingEnv:No env variable found ".concat(env));
+        logger.error(null, "Constant:printErrorForMissingEnv:No env variable found ".concat(env));
     }
 
     private static String getEncServiceUrl() {
@@ -193,7 +191,7 @@ public class CertsConstant {
     }
 
     public Map<String, Object> getStorageParamsFromEvn() {
-        logger.info("getting storage params from env");
+        logger.info(null, "getting storage params from env");
         String type = getCloudStorageType();
         Map<String, Object> storeParams = new HashMap<>();
         storeParams.put(JsonKey.TYPE, type);

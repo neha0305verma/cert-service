@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
+import org.sunbird.LoggerUtil;
 import org.sunbird.RequestValidatorFunction;
 import org.sunbird.message.Localizer;
 import org.sunbird.request.Request;
@@ -38,7 +39,7 @@ import utils.RequestMapper;
  * @author Anmol
  */
 public class BaseController extends Controller {
-	Logger logger = LoggerFactory.getLogger(BaseController.class);
+	LoggerUtil logger = new LoggerUtil(this.getClass());
 	private static final String debugEnabled = "false";
 	/**
 	 * We injected HttpExecutionContext to decrease the response time of APIs.
@@ -75,7 +76,7 @@ public class BaseController extends Controller {
 	 * @param tag
 	 */
 	public void startTrace(String tag) {
-		logger.info("Method call started.");
+		logger.info(null, "Method call started.");
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class BaseController extends Controller {
 	 * @param tag
 	 */
 	public void endTrace(String tag) {
-		logger.info("Method call ended.");
+		logger.info(null, "Method call ended.");
 	}
 
 

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class QRStorageParams {
 
-    private Logger logger = LoggerFactory.getLogger(QRStorageParams.class);
+    private LoggerUtil logger = new LoggerUtil(this.getClass());
     public Map<String, Object> storeParams;
 
     public QRStorageParams(String storageType) {
@@ -18,7 +18,7 @@ public class QRStorageParams {
     }
 
     private Map<String, Object> getStorageParamsFromEnv(String type) {
-        logger.info("QRStorageParams getting storage params from env ");
+        logger.info(null, "QRStorageParams getting storage params from env ");
         Map<String, Object> storeParams = new HashMap<>();
         storeParams.put(JsonKey.TYPE, type);
         if (StringUtils.isNotBlank(type)) {
