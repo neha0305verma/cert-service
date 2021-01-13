@@ -23,6 +23,8 @@ public class Request implements Serializable {
   private static final int WAIT_TIME_VALUE = 120;
 
   protected Map<String, Object> context;
+  private RequestContext requestContext;
+
   private String id;
   private String ver;
   private String ts;
@@ -111,9 +113,9 @@ public class Request implements Serializable {
   @Override
   public String toString() {
     return "Request ["
-        + (context != null ? "context=" + context + ", " : "")
-        + (request != null ? "requestValueObjects=" + request : "")
-        + "]";
+            + (context != null ? "context=" + context + ", " : "")
+            + (request != null ? "requestValueObjects=" + request : "")
+            + "]";
   }
 
   public String getId() {
@@ -179,5 +181,13 @@ public class Request implements Serializable {
               ResponseCode.CLIENT_ERROR.getCode());
     }
     this.timeout = timeout;
+  }
+
+  public RequestContext getRequestContext() {
+    return requestContext;
+  }
+
+  public void setRequestContext(RequestContext requestContext) {
+    this.requestContext = requestContext;
   }
 }
