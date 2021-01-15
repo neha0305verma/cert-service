@@ -7,6 +7,7 @@ import akka.testkit.javadsl.TestKit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.junit.*;
 import org.sunbird.incredible.processor.JsonKey;
 import org.sunbird.incredible.processor.qrcode.AccessCodeGenerator;
 import org.sunbird.incredible.processor.qrcode.QRCodeGenerationModel;
@@ -14,10 +15,6 @@ import org.sunbird.incredible.processor.qrcode.utils.QRCodeImageGenerator;
 import org.sunbird.incredible.processor.store.*;
 import org.sunbird.incredible.processor.views.HTMLTemplateZip;
 import org.sunbird.incredible.processor.views.HeadlessChromeHtmlToPdfConverter;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -48,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+@Ignore
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({HeadlessChromeHtmlToPdfConverter.class,
         CloudStorage.class,

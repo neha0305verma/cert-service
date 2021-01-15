@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import static play.inject.Bindings.bind;
 
+@Ignore
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"jdk.internal.reflect.*","javax.management.*","sun.security.ssl.*", "javax.net.ssl.*" , "javax.crypto.*"})
 public abstract class BaseApplicationTest {
