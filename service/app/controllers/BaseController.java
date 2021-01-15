@@ -9,8 +9,6 @@ import akka.actor.ActorRef;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.LoggerUtil;
 import org.sunbird.RequestValidatorFunction;

@@ -112,7 +112,7 @@ public class CertsConstant {
     }
 
     private static void printErrorForMissingEnv(String env) {
-        logger.error(null, "Constant:printErrorForMissingEnv:No env variable found ".concat(env));
+        logger.error(null, "Constant:printErrorForMissingEnv:No env variable found ".concat(env), null);
     }
 
     private static String getEncServiceUrl() {

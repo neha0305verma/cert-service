@@ -31,13 +31,6 @@ public class LoggerUtil {
             logger.error(message, e);
     }
 
-    public void error(RequestContext requestContext, String message) {
-        if (null != requestContext)
-            logger.error(Markers.appendEntries(requestContext.getContextMap()), message);
-        else
-            logger.error(message);
-    }
-
     public void warn(RequestContext requestContext, String message, Throwable e) {
         if (null != requestContext)
             logger.warn(Markers.appendEntries(requestContext.getContextMap()), message, e);

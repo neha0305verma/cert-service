@@ -33,6 +33,7 @@
     </properties>
 
     <modules>
+        <module>sb-utils</module>
         <module>cert-processor</module>
         <module>all-actors</module>
         <module>es-utils</module>

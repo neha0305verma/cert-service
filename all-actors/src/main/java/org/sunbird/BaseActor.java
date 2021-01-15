@@ -7,7 +7,6 @@ import org.sunbird.message.Localizer;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.request.Request;
 import org.sunbird.request.RequestContext;
-import org.sunbird.LoggerUtil;
 
 import java.util.*;
 
