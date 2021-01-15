@@ -3,6 +3,7 @@ package controllers.health;
 import controllers.BaseApplicationTest;
 import controllers.DummyActor;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import play.mvc.Result;
 import utils.module.ACTOR_NAMES;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class HealthControllerTest extends BaseApplicationTest {
 
   @Before
