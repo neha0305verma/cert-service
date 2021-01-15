@@ -1,5 +1,4 @@
 FROM sunbird/openjdk-java11-alpine:latest
-MAINTAINER "S M Y ALTAMASH <smy.altamash@gmail.com>"
 RUN apk update \
     && apk add  unzip \
     && apk add curl \
